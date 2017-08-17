@@ -1,0 +1,189 @@
+<html>
+<head>
+<style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .controls {
+        background-color: #fff;
+        border-radius: 2px;
+        border: 1px solid transparent;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        box-sizing: border-box;
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+        height: 29px;
+        margin-left: 17px;
+        margin-top: 10px;
+        outline: none;
+        padding: 0 11px 0 13px;
+        text-overflow: ellipsis;
+        width: 400px;
+      }
+
+      .controls:focus {
+        border-color: #4d90fe;
+      }
+      .title {
+        font-weight: bold;
+      }
+      #infowindow-content {
+        display: none;
+      }
+      #map #infowindow-content {
+        display: inline;
+      }
+      </style>
+
+    <script src="/jquery/jquery.js"> </script>
+    <script src="/bootstrap/js/bootstrap.js" > </script>
+	  <link rel="stylesheet" media="screen" charset="utf-8"  href="/bootstrap/css/bootstrap.css"> </link>
+	  
+
+    <script type="text/javascript">
+
+     var loc = {};
+
+      function submitForm(){
+        
+        console.log ( loc)
+        if ( !loc.placeName){
+          alert("Select a Property before clicking on submit");
+        
+        } else {
+          
+          var promoter = $("#promoter").val();
+          var rooms = $("#rooms").val();
+
+          $.post( "/addProperty" ,  {location:loc , promoter: promoter, rooms: rooms  }    )
+	  			.done ( function( data ) {
+            console.log ( data);
+	  				alert( data ) ;
+	  			});
+        }
+
+        
+
+      }
+      // This sample uses the Place Autocomplete widget requesting only a place
+      // ID to allow the user to search for and locate a place. The sample
+      // then reverse geocodes the place ID and displays an info window
+      // containing the place ID and other information about the place that the
+      // user has selected.
+
+      // This example requires the Places library. Include the libraries=places
+      // parameter when you first load the API. For example:
+      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
+
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: -33.8688, lng: 151.2195},
+          zoom: 13
+        });
+
+        var input = document.getElementById('pac-input');
+
+        var autocomplete = new google.maps.places.Autocomplete(
+            input, {placeIdOnly: true});
+        autocomplete.bindTo('bounds', map);
+
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        var infowindow = new google.maps.InfoWindow();
+        var infowindowContent = document.getElementById('infowindow-content');
+        infowindow.setContent(infowindowContent);
+        var geocoder = new google.maps.Geocoder;
+        var marker = new google.maps.Marker({
+          map: map
+        });
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+
+        autocomplete.addListener('place_changed', function() {
+          infowindow.close();
+          var place = autocomplete.getPlace();
+
+          if (!place.place_id) {
+            return;
+          }
+          geocoder.geocode({'placeId': place.place_id}, function(results, status) {
+
+            if (status !== 'OK') {
+              window.alert('Geocoder failed due to: ' + status);
+              return;
+            }
+            map.setZoom(11);
+            map.setCenter(results[0].geometry.location);
+            // Set the position of the marker using the place ID and location.
+            marker.setPlace({
+              placeId: place.place_id,
+              location: results[0].geometry.location
+            });
+            marker.setVisible(true);
+            infowindowContent.children['place-name'].textContent = place.name;
+            infowindowContent.children['place-id'].textContent = place.place_id;
+            infowindowContent.children['place-address'].textContent =
+                results[0].formatted_address;
+            infowindow.open(map, marker);
+
+loc.coordinates = '' + results[0].geometry.location ;
+            loc.placeName =  place.name ;
+            loc.placeId = place.place_id;
+            loc.placeAddress = results[0].formatted_address ;
+            
+            
+
+          });
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key= AIzaSyDpxcj9Hr_ghs8SXRXYGy5ENl1G-kOYxX8 &libraries=places&callback=initMap"
+        async defer></script>
+
+
+</head>
+
+<body>
+
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Promoter</label>
+      <div class="col-sm-10">	
+        <input type="text" class="form-control" id="promoter" placeholder="Promoter" value=""  />
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="Description" class="col-sm-2 control-label">No of Rooms</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="rooms" placeholder="Number of Rooms" value="1"  />
+      </div>
+    </div>
+ </form>
+
+   <input id="pac-input" class="controls" type="text"
+        placeholder="Enter the property">
+    <div id="map" style="width:60%; height:400px; margin-left:100px; margin:10px; padding:10px;"></div>
+    <div id="infowindow-content">
+      <span id="place-name"  class="title"></span><br>
+      Place ID <span id="place-id"></span><br>
+      <span id="place-address"></span>
+    </div>
+  
+  <button  onclick="submitForm();" class="btn btn-default">Submit</button>
+
+
+
+
+
+</body>
+</html>
