@@ -39,12 +39,14 @@ function save(req, resp){
                  requestBody.Payload.country = nameArray[4]
                  break;
 
-         case 6 : requestBody.Payload.fullname = location.placeName ;
+         case 6 : 
+         default : 
+                 requestBody.Payload.fullname = location.placeName ;
                  requestBody.Payload.name = nameArray[0]
                  requestBody.Payload.area = nameArray[2]
-                 requestBody.Payload.city = nameArray[3]
-                 requestBody.Payload.state = nameArray[4]
-                 requestBody.Payload.country = nameArray[5] ;
+                 requestBody.Payload.city = nameArray[nameArray.length-3]
+                 requestBody.Payload.state = nameArray[nameArray.length-2]
+                 requestBody.Payload.country = nameArray[nameArray.length-1] ;
                          
                  
         
