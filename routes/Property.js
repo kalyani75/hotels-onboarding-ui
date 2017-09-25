@@ -61,6 +61,7 @@ function save(req, resp){
         requestBody.Payload.propertyId  = coordinatesArray[0] + "," + coordinatesArray[1] ;
         requestBody.Payload.promoter = promoter ;
         requestBody.Payload.rooms = Number(rooms) ;
+        requestBody.Payload.autoId = Math.floor( Math.random()* 100000)
         
     }
 

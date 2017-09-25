@@ -45,7 +45,8 @@ function save(req, resp){
         requestBody.Payload.coordinates = { lat: Number(coordinatesArray[0]) , lng: Number(coordinatesArray[1]) }
         requestBody.Payload.placeId = location.placeId ;
         requestBody.Payload.locationId = coordinatesArray[0] + "," + coordinatesArray[1] ;
-        
+        requestBody.Payload.autoId = Math.floor( Math.random()* 100000)
+
     }
 
     callAPIEndpoint( requestBody, resp)
