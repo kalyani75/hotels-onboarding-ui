@@ -64,9 +64,9 @@ function save(req, resp){
         
     }
 
-    //callAPIEndpoint(requestBody, resp)
+    callAPIEndpoint(requestBody, resp)
     
-    updateDataFile( requestBody.Payload,resp);
+    //updateDataFile( requestBody.Payload,resp);
     
 }
 
