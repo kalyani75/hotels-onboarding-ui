@@ -25,6 +25,29 @@ function save(req, resp){
         case 3 : requestBody.Payload.name= 'UNDEFINED' ; break; 
         case 4 : requestBody.Payload.fullname = location.placeName ;
                  requestBody.Payload.name = nameArray[0]
+                 requestBody.Payload.city = nameArray[1]
+                 requestBody.Payload.area = "__AREA__"
+                 requestBody.Payload.state = nameArray[2]
+                 requestBody.Payload.country = nameArray[3]
+                 break ;
+                 
+         case 5 : requestBody.Payload.fullname = location.placeName ;
+                 requestBody.Payload.name = nameArray[0]
+                 requestBody.Payload.area = nameArray[1]
+                 requestBody.Payload.city = nameArray[2]
+                 requestBody.Payload.state = nameArray[3]
+                 requestBody.Payload.country = nameArray[4]
+                 break;
+
+         case 6 : 
+         default : 
+                 requestBody.Payload.fullname = location.placeName ;
+                 requestBody.Payload.name = nameArray[0]
+                 requestBody.Payload.area = nameArray[2]
+                 requestBody.Payload.city = nameArray[nameArray.length-3]
+                 requestBody.Payload.state = nameArray[nameArray.length-2]
+                 requestBody.Payload.country = nameArray[nameArray.length-1] ;
+                         
                  
         
     }
@@ -38,9 +61,39 @@ function save(req, resp){
         requestBody.Payload.propertyId  = coordinatesArray[0] + "," + coordinatesArray[1] ;
         requestBody.Payload.promoter = promoter ;
         requestBody.Payload.rooms = Number(rooms) ;
+        requestBody.Payload.autoId = Math.floor( Math.random()* 100000)
         
     }
 
+    callAPIEndpoint(requestBody, resp)
+    
+    //updateDataFile( requestBody.Payload,resp);
+    
+}
+
+
+
+
+function updateDataFile( Payload, resp){
+
+    var fs = require('fs');
+    let separator = ';' ;
+    let imageURL = 'images/hotels/H-101.jpg' ;
+    var stream = fs.createWriteStream("./datafile.csv", { encoding: 'utf8', flags:'a'});
+    //stream.once('open', function(fd) {
+        // name, acname, area, city, state, country 
+        stream.write("\n" + Payload.placeid + separator +  Payload.fullname + separator + 
+         Payload.name + separator + Payload.name.toLowerCase() + separator +  Payload.area + separator + 
+         Payload.city + separator + Payload.state + separator + Payload.country + separator + imageURL + 
+        separator + Payload.coordinates.lat + separator + Payload.coordinates.lng  );
+        
+        stream.end();
+        console.log('Success: ');
+        resp.end ("Successfully added property: " + Payload.name) ;
+    //});
+}
+
+function callAPIEndpoint(requestBody, resp){
 
     var options = { method: 'POST',
     url:  process.env.API_HOST +  '/api/Events',
@@ -68,8 +121,6 @@ function save(req, resp){
         }
     
     });
-
-    
 }
 
 module.exports= {
